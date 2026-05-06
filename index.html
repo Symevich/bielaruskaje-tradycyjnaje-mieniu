@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="be">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Меню Беларускай Кухні</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap');
+
+    :root {
+      --linen:     #f5efe6;
+      --parchment: #e8dcc8;
+      --dark:      #2b1d0e;
+      --accent:    #7a3b1e;
+      --gold:      #b8860b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'EB Garamond', Georgia, serif;
+      background-color: var(--linen);
+      color: var(--dark);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--dark);
+      border-bottom: 2px solid var(--gold);
+      padding: .65rem 1rem;
+      display: flex;
+      gap: .25rem .5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+    }
+    .nav-title {
+      font-family: 'Playfair Display', serif;
+      color: var(--gold);
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      white-space: nowrap;
+      margin-right: .6rem;
+      padding-right: .8rem;
+      border-right: 1px solid #5c3317;
+    }
+    nav a {
+      color: #d4b896;
+      text-decoration: none;
+      font-size: .8rem;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      padding: .28rem .65rem;
+      border-radius: 3px;
+      transition: background .2s, color .2s;
+    }
+    nav a:hover, nav a.active {
+      background: var(--gold);
+      color: var(--dark);
+    }
+
+    /* ── SECTION ── */
+    .section-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3.5rem 1.5rem;
+    }
+    .bg-alt { background: var(--parchment); }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .section-header .cat-icon { font-size: 2.5rem; display: block; margin-bottom: .4rem; }
+    .section-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.7rem, 3.5vw, 2.6rem);
+      color: var(--accent);
+      display: inline-block;
+    }
+    .section-header h2::after {
+      content: '';
+      display: block;
+      width: 65%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: .45rem auto 0;
+    }
+
+    /* ── CARDS ── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 1.6rem;
+    }
+    .card {
+      background: #fff;
+      border-radius: 9px;
+      overflow: hidden;
+      box-shadow: 0 4px 18px rgba(43,29,14,.11);
+      transition: transform .24s, box-shadow .24s;
+      display: flex;
+      flex-direction: column;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 32px rgba(43,29,14,.19);
+    }
+    .card-img {
+      width: 100%;
+      height: 195px;
+      object-fit: cover;
+      display: block;
+    }
+    .card-body {
+      padding: 1.1rem 1.3rem 1.35rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: .5rem;
+    }
+    .card-desc {
+      font-size: 1rem;
+      line-height: 1.65;
+      color: #4a3520;
+      flex: 1;
+    }
+    .card-quote {
+      margin-top: .9rem;
+      padding: .6rem .9rem;
+      background: var(--linen);
+      border-left: 3px solid var(--gold);
+      font-style: italic;
+      font-size: .92rem;
+      color: #6b4c2a;
+      line-height: 1.6;
+      border-radius: 0 4px 4px 0;
+    }
+    .card-quote cite {
+      display: block;
+      margin-top: .3rem;
+      color: var(--gold);
+      font-style: normal;
+      font-size: .8rem;
+    }
+
+    .section-divider {
+      text-align: center;
+      color: var(--gold);
+      font-size: 1.2rem;
+      letter-spacing: .9rem;
+      padding: .8rem 0;
+      opacity: .45;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--dark);
+      color: #a08060;
+      text-align: center;
+      padding: 1.8rem 1rem;
+      font-size: .9rem;
+      border-top: 2px solid var(--gold);
+    }
+    footer em { color: #d4b896; }
+
+    /* ── REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(26px); transition: opacity .55s ease, transform .55s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    @media (max-width: 600px) {
+      .cards-grid { grid-template-columns: 1fr; }
+      .nav-title { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAV ══ -->
+<nav id="main-nav">
+  <span class="nav-title">Меню Беларускай Кухні</span>
+  <a href="#bread">🥖 Хлеб</a>
+  <a href="#potato">🥔 Бульба</a>
+  <a href="#soups">🍲 Супы</a>
+  <a href="#meat">🥩 Мяса</a>
+  <a href="#fish">🐟 Рыба</a>
+  <a href="#dairy">🥛 Малочнае</a>
+  <a href="#drinks">🍹 Напоі</a>
+</nav>
+
+<!-- ══════════════ ХЛЕБ ══════════════ -->
+<section id="bread">
+  <div class="section-wrapper">
+    <div class="section-header reveal">
+      <span class="cat-icon">🥖</span>
+      <h2>Хлеб і Выпечка</h2>
+    </div>
+    <div class="cards-grid">
+
+      <article class="card reveal">
+        <img class="card-img" src="https://images.pexels.com/photos/30969791/pexels-photo-30969791.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200" alt="Жытні хлеб" loading="lazy" />
+        <div class="card-body">
+          <h3 class="card-title">Жытні хлеб</h3>
+          <p class="card-desc">Пякуць на подзе, на капусных або кляновых лісцях, пасля спырскваюць вадою і астывае пад ручніком. Няма нічога смачней, як адрэзаць гарачую лусту, густа пасаліць яе і з'есці.</p>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://images.pexels.com/photos/4034017/pexels-photo-4034017.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200" alt="Праснакі" loading="lazy" />
+        <div class="card-body">
+          <h3 class="card-title">Прэсныя хлябы (праснакі)</h3>
+          <p class="card-desc">Улетку, калі дарагая хвіліна, елі прэсны хлеб.</p>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://images.pexels.com/photos/33338121/pexels-photo-33338121.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200" alt="Пірагі з яблыкамі" loading="lazy" />
+        <div class="card-body">
+          <h3 class="card-title">Пірагі з яблыкамі/садавінай</h3>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://images.pexels.com/photos/6643739/pexels-photo-6643739.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200" alt="Пірагі з чарніцамі" loading="lazy" />
+        <div class="card-body">
+          <h3 class="card-title">Пірагі з чарніцамі</h3>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://i.ytimg.com/vi/KW8iSs9a6qU/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDja5QRhMoSIm4erHfC8KxUb3VqMg" alt="Струцаль" loading="lazy" />
+        <div class="card-body">
+          <h3 class="card-title">Струцаль</h3>
+          <p class="card-desc">Кручаны з макам.</p>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <div class="card-body">
+          <h3 class="card-title">«Зайцаў хлеб»</h3>
+          <p class="card-desc">Хлеб, што бацька прыносіў з лесу ці з дарогі.</p>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<div class="section-divider">✦ ✦ ✦</div>
+
+<!-- ══════════════ БУЛЬБА ══════════════ -->
+<section id="potato" class="bg-alt">
+  <div class="section-wrapper">
+    <div class="section-header reveal">
+      <span class="cat-icon">🥔</span>
+      <h2>Бульба — Другі Хлеб</h2>
+    </div>
+    <div class="cards-grid">
+
+      <article class="card reveal">
+        <img class="card-img" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcC8e_Vf-9PbPiXilOcOx3AKF4q1U3r21EGw&s" alt="Печаная бульба" loading="lazy" />
+        <div class="card-body">
+          <h3 class="card-title">Печаная бульба</h3>
+          <p class="card-desc">На начлезе, якую так добра выкаціць з попелу вогнішча, абскрэбці, разламаць і, калі яна яшчэ дыміцца, саліць і, захлынаючыся, глытаць.</p>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://pokoy.by/files/posts/08092022.jpg" alt="Клёцкі з душамі" loading="lazy" />
+        <div class="card-body">
+          <h3 class="card-title">Клёцкі з душамі</h3>
+          <p class="card-desc">Вялізныя клёцкі з цёртай бульбы, начыненыя мясам.</p>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://images.gastronom.ru/Wm7yTTrT3LuKvyoTgyIMOy9JcMyU76qIYHm0xiuT1kU/pr:recipe-cover-image/g:ce/rs:auto:0:0:0/L2Ntcy9hbGwtaW1hZ2VzLzkxNjI5MjQyLWNmZDctNGM3NS04YjE3LTY5MTIzMTliOTA2My5qcGc.webp" alt="Бульба фаршыраваная грыбамі" loading="lazy" />
+        <div class="card-body">
+          <h3 class="card-title">Бульба фаршыраваная сушанымі грыбамі</h3>
+          <p class="card-desc">Запечаная ў гарачай печы.</p>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://img.povar.ru/mobile/8f/17/09/9d/varenaya_kartoshka_s_zeleniu-189008.jpg" alt="Вараная бульба" loading="lazy" />
+        <div class="card-body">
+          <h3 class="card-title">Вараная бульба з падгарэлымі вяршкамі</h3>
+          <p class="card-desc">Высыпаная на абрус на стале. Бяры і еш. А да яе сала, салёныя агуркі (з кропам, халодныя) і селядзец.</p>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<div class="section-divider">✦ ✦ ✦</div>
+
+<!-- ══════════════ СУПЫ ══════════════ -->
+<section id="soups">
+  <div class="section-wrapper">
+    <div class="section-header reveal">
+      <span class="cat-icon">🍲</span>
+      <h2>Супы і Першае</h2>
+    </div>
+    <div class="cards-grid">
+
+      <article class="card reveal">
+        <img class="card-img" src="https://images.pexels.com/photos/12955891/pexels-photo-12955891.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200" alt="Капуста" loading="lazy" />
+        <div class="card-body">
+          <h3 class="card-title">Капуста</h3>
+          <p class="card-desc">З кіслай або свежай капусты.</p>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjV-ewtoxvIsigwvVn84wk9WHo9XHr-VgwgRNxUEZynG8YaY1Rx1uQGVe-Vn9reMik0kZRTz6qajCsevpS0SogxiSo6xN7lnDSpWpv_dzkklef0vqUgjPzvGCHve89NJTNumD3DfeeEZhE/s1600/sup.jpg" alt="" class="card-img" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title">Поліўка</h3>
+          <p class="card-desc">Вельмі тлусты гарачы суп, падбоўтаны мукой.</p>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://gotovim-doma.ru/images/recipe/5/6c/56c69f6d4d74af10dd0694a60fd02bf1.jpg" alt="Панцак" loading="lazy" />
+        <div class="card-body">
+          <h3 class="card-title">Панцак</h3>
+          <p class="card-desc">Пярловы суп з грыбамі.</p>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://images.gastronom.ru/Z98o1kQPopCBTgk92yYG6MbA1xWr2k-w013IWQuZ6tg/pr:recipe-preview-image/g:ce/rs:auto:382:215:0/L2Ntcy9hbGwtaW1hZ2VzL2I0NTcxMzQ1LTEyZWQtNDZiOS1iYmEzLWIwMzc4MGZkM2NmMi5qcGc.webp" alt="Бульбяны суп (булён)" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title">Бульбяны суп (булён)</h3>
+          <p class="card-desc">Запраўлены салам.</p>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://img.iamcook.ru/old/upl/recipes/misc/fec6074d522624cf4e632a9e423b8469.jpg" alt="Лапша з курынымі вантробамі" loading="lazy" />
+        <div class="card-body">
+          <h3 class="card-title">Лапша з курынымі вантробамі</h3>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://icdn.lenta.ru/images/2025/04/14/16/20250414162308694/wide_4_3_bdeff30add8309f9b87432518fc4526c.jpg" alt="Шчаўе" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title">Шчаўе</h3>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://i.ytimg.com/vi/x1bzFWJxcSk/maxresdefault.jpg" alt="Маладая крапіва з яйкамі" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title">Маладая крапіва з яйкамі</h3>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://images.pexels.com/photos/8694621/pexels-photo-8694621.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200" alt="Халаднік" loading="lazy" />
+        <div class="card-body">
+          <h3 class="card-title">Халаднік</h3>
+          <p class="card-desc">З халодным мясам і гуркамі.</p>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://img.povar.ru/mobile/c8/25/94/90/molochnii_sup_s_kapustoi-723155.JPG" alt="Гушча наліваная" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title">Гушча наліваная</h3>
+          <p class="card-desc">Пшанічная каша, залітая гарачым малаком.</p>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://img.povar.ru/mobile/30/04/5e/f6/borsh_na_svekolnom_kvase-807703.JPG" alt="Квас" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title">Квас</h3>
+          <p class="card-desc">Род баршчу з буракоў. У чырвоны празрысты адвар клалі мяса, грыбы і іншае.</p>
+          <blockquote class="card-quote">
+            «Аздоблен квас быў і грыбамі,<br/>
+            Выключна ўсё баравічкамі;<br/>
+            Цыбуля, перчык, ліст бабковы —<br/>
+            Ну, не ўясісь, каб я здаровы!»
+            <cite>— Якуб Колас, «Новая зямля»</cite>
+          </blockquote>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<div class="section-divider">✦ ✦ ✦</div>
+
+<!-- ══════════════ МЯСА ══════════════ -->
+<section id="meat" class="bg-alt">
+  <div class="section-wrapper">
+    <div class="section-header reveal">
+      <span class="cat-icon">🥩</span>
+      <h2>Мясныя Стравы</h2>
+    </div>
+    <div class="cards-grid">
+
+      <article class="card reveal">
+        <img class="card-img" src="https://images.gastronom.ru/Fhx01MjW1TWIyiDZ6BIpul0zFHp4gyJmIEPxQY1Ek0o/pr:recipe-cover-image/g:ce/rs:auto:0:0:0/L2Ntcy9hbGwtaW1hZ2VzLzE4MzA0NmRhLWNmNGQtNDRkYy1hZjliLTkxMjhhZjRhMWMwNS5qcGc.webp" alt="Калдуны" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title">Калдуны</h3>
+          <p class="card-desc">Нешта накшталт вялікіх і доўгіх пельменяў.</p>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://images.pexels.com/photos/12961893/pexels-photo-12961893.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200" alt="Яешня глазуха" loading="lazy" />
+        <div class="card-body">
+          <h3 class="card-title">Яешня «глазуха»</h3>
+          <p class="card-desc">Проста яешня.</p>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://shuba.life/static/content/thumbs/1824x912/8/a2/gcdfqq---c2x1x50px50p-up--dc3be595bc845c7fedf70530a6736a28.jpg" alt="Верашчака" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title">Верашчака</h3>
+          <p class="card-desc">Яешня, запечаная з мясам і салам у гаршку.</p>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://mydeliciousmeals.com/images/recipephotos/large/belarusian_machanka_with_yeast_crepes.jpg" alt="Мачанка з блінамі" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title">Мачанка з блінамі</h3>
+          <p class="card-desc">Своеасаблівая падліва з мяса, рабрынак і сала, падбоўтаная мукой, у якую «мачаюць» бліны.</p>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://images.pexels.com/photos/26699180/pexels-photo-26699180.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200" alt="Вэнджаная шынка" loading="lazy" />
+        <div class="card-body">
+          <h3 class="card-title">Вэнджаная шынка</h3>
+          <p class="card-desc">Вэнджаная ў хатняй капцільні, і проста так ядуць, і закусваюць, і проста перакусваюць.</p>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQrNofuWuGxkzSNDgObD8uuHE-nEcHX1cPC3w&s" alt="Летнія і зімнія каўбасы" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title">Летнія і зімнія каўбасы</h3>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://img.povar.ru/mobile/0c/71/06/ea/kurinaya_polendvica-104980.jpg" alt="Паляндвіца" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title">Паляндвіца</h3>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://img.iamcook.ru/2024/upl/recipes/cat/u-9b3e69e92770e4fdf2ab9ca93f2d1289.jpg" alt="Качка з бруснічным варэннем" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title">Качка з бруснічным варэннем</h3>
+          <p class="card-desc">З крышанымі буракамі і яблыкамі.</p>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://i.ytimg.com/vi/5WeU4go3YM8/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLC34D8pCMu4vPyqV4xSZfsZ3jMKiw" alt="Качка запечаная ў гліне" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title">Качка запечаная ў гліне</h3>
+          <p class="card-desc">Елі на паляваннях, калі былі стрэльбы.</p>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<div class="section-divider">✦ ✦ ✦</div>
+
+<!-- ══════════════ РЫБА ══════════════ -->
+<section id="fish">
+  <div class="section-wrapper">
+    <div class="section-header reveal">
+      <span class="cat-icon">🐟</span>
+      <h2>Рыбныя Стравы</h2>
+    </div>
+    <div class="cards-grid">
+
+      <article class="card reveal">
+        <img class="card-img" src="https://avatars.mds.yandex.net/get-vertis-journal/4466156/08bb6842-5007-412a-a2e7-a411651ca47d.jpeg/1600x1600" alt="Юшка" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title">Юшка</h3>
+          <p class="card-desc">Цудоўная, празрыстая, бурштынавая ад тлушчу і ад таго, што цыбулю туды кладуць, зняўшы толькі верхнія сухія жоўтыя лушпайкі.</p>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://xn----8sbehgcimb3cfabqj3b.xn--p1ai/upload/iblock/cd7/z6az305zbfrrtavctsk9j9bkzh5etdu6/thumbnail-_19_.jpg" alt="Вэнджаны вугор" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title">Вэнджаны вугор</h3>
+          <p class="card-desc">Вараць у юшцы, часцей вэндзяць.</p>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://omega-3.by/sites/default/files/styles/pochti100proc/public/koryushka_omega3.jpg?itok=hhTiEHL8" alt="Смажаная сялява" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title">Смажаная сялява</h3>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://img.iamcook.ru/old/upl/recipes/cat/u-6484aa5879ade3e646e7c0251a5d0285.JPG" alt="Вараныя ракі" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title">Вараныя ракі</h3>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<div class="section-divider">✦ ✦ ✦</div>
+
+<!-- ══════════════ МАЛОЧНАЕ ══════════════ -->
+<section id="dairy" class="bg-alt">
+  <div class="section-wrapper">
+    <div class="section-header reveal">
+      <span class="cat-icon">🥛</span>
+      <h2>Малочныя Прадукты</h2>
+    </div>
+    <div class="cards-grid">
+
+      <article class="card reveal">
+        <img class="card-img" src="https://s1.eda.ru/StaticContent/Photos/0/74/0741872b2add43e698922646a25e013d.jpg" alt="Сырое малако" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title">Сырое малако</h3>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://img.championat.com/c/1200x900/news/big/j/y/kakaya-smetana-poleznee-10-15-ili-20-zhirnosti_1653385205809169240.jpg" alt="Смятана" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title">Смятана</h3>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://img.povar.ru/mobile/44/3d/7f/d5/vkusnii_domashnii_tvorog_iz_moloka_i_smetani-823858.JPG" alt="Тварог запраўлены смятанай" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title">Тварог запраўлены смятанай</h3>
+          <blockquote class="card-quote">
+            «Тварог, запраўлены смятанай,<br/>
+            Нясла з вялікаю пашанай»
+            <cite>— Якуб Колас, «Новая зямля»</cite>
+          </blockquote>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0LseLvbDXyTBn-nGXvoo0xISodoS0Clc4fA&s" alt="Вяршкі" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title">Вяршкі</h3>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<div class="section-divider">✦ ✦ ✦</div>
+
+<!-- ══════════════ НАПОІ ══════════════ -->
+<section id="drinks">
+  <div class="section-wrapper">
+    <div class="section-header reveal">
+      <span class="cat-icon">🍹</span>
+      <h2>Напоі</h2>
+    </div>
+    <div class="cards-grid">
+
+      <article class="card reveal">
+        <img class="card-img" src="https://bsmpgrodno.by/wp-content/uploads/2025/03/756788898364186.webp" alt="Бярозавік" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title">Бярозавік</h3>
+          <p class="card-desc">Сок бярозавы п'юць і свежы, і даўшы яму перабрадзіць і крыху закіснуць. Так ён зберагаецца ў бочцы да жніва, і яго бяруць у поле. Кіславата-салодкі (часам у яго дабаўляюць хатні парэчкавы ці яблычны сок), рэзкі, дужа добры ў спёку.</p>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://vozrast-online.ru/images/410.jpeg" alt="Квас" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title">Квас</h3>
+          <p class="card-desc">Нацыянальны беларускі напой.</p>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://vechera.me/uploads/ckeditor/pictures/223/content_1.jpg" alt="Крупнік" loading="lazy">
+        <div class="card-body">
+          <h3 class="card-title">Крупнік</h3>
+          <p class="card-desc">Звараны з мёдам, вострымі прыправамі, травамі і карэннямі.</p>
+        </div>
+      </article>
+
+      <article class="card reveal">
+        <img class="card-img" src="https://images.pexels.com/photos/8450512/pexels-photo-8450512.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200" alt="Тройчы дзевяць" loading="lazy" />
+        <div class="card-body">
+          <h3 class="card-title">«Тройчы дзевяць»</h3>
+          <p class="card-desc">Лячэбная настойка на дваццаці сямі травах.</p>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <p>Паводле нарысу <em>«Зямля мая беларуская»</em> Уладзіміра Караткевіча</p>
+</footer>
+
+<script>
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 55);
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Active nav
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('nav a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(sec => {
+      if (window.scrollY >= sec.offsetTop - 110) current = sec.id;
+    });
+    navLinks.forEach(link => {
+      link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+    });
+  });
+</script>
+</body>
+</html>
