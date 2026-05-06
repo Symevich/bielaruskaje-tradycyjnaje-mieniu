@@ -14,6 +14,9 @@
       --dark:      #2b1d0e;
       --accent:    #7a3b1e;
       --gold:      #b8860b;
+      --cols: 3;
+      --card-min: 290px;
+      --gap: 1.6rem;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -33,9 +36,9 @@
       z-index: 100;
       background: var(--dark);
       border-bottom: 2px solid var(--gold);
-      padding: .65rem 1rem;
+      padding: .55rem .75rem;
       display: flex;
-      gap: .25rem .5rem;
+      gap: .2rem .4rem;
       flex-wrap: wrap;
       justify-content: center;
       align-items: center;
@@ -47,19 +50,20 @@
       font-weight: 700;
       letter-spacing: .06em;
       white-space: nowrap;
-      margin-right: .6rem;
-      padding-right: .8rem;
+      margin-right: .5rem;
+      padding-right: .7rem;
       border-right: 1px solid #5c3317;
     }
     nav a {
       color: #d4b896;
       text-decoration: none;
-      font-size: .8rem;
-      letter-spacing: .07em;
+      font-size: .78rem;
+      letter-spacing: .06em;
       text-transform: uppercase;
-      padding: .28rem .65rem;
+      padding: .26rem .55rem;
       border-radius: 3px;
       transition: background .2s, color .2s;
+      white-space: nowrap;
     }
     nav a:hover, nav a.active {
       background: var(--gold);
@@ -94,12 +98,26 @@
       margin: .45rem auto 0;
     }
 
-    /* ── CARDS ── */
+    /* ── CARDS GRID ──
+       Uses auto-fill so the browser creates as many columns as fit.
+       The last-row centering trick: a hidden pseudo-flex approach via
+       CSS grid + justify-items on the grid itself won't center partial rows.
+       Instead we use a flex-based grid that mimics 3 columns and centers leftovers.
+    */
     .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-      gap: 1.6rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--gap);
+      justify-content: center;
     }
+
+    .cards-grid .card {
+      /* Each card takes up 1 of 3 columns minus the gaps */
+      flex: 0 1 calc((100% - 2 * var(--gap)) / 3);
+      min-width: var(--card-min);
+    }
+
+    /* ── CARD ── */
     .card {
       background: #fff;
       border-radius: 9px;
@@ -181,9 +199,68 @@
     .reveal { opacity: 0; transform: translateY(26px); transition: opacity .55s ease, transform .55s ease; }
     .reveal.visible { opacity: 1; transform: none; }
 
+    /* ══════════════════════════
+       RESPONSIVE BREAKPOINTS
+    ══════════════════════════ */
+
+    /* Large tablets / small desktops: 2 columns */
+    @media (max-width: 1024px) {
+      :root { --cols: 2; --card-min: 260px; }
+      .cards-grid .card {
+        flex: 0 1 calc((100% - 1 * var(--gap)) / 2);
+        min-width: var(--card-min);
+      }
+      .section-wrapper {
+        padding: 2.8rem 1.2rem;
+      }
+    }
+
+    /* Tablets: still 2 columns but tighter */
+    @media (max-width: 768px) {
+      :root { --card-min: 220px; --gap: 1.2rem; }
+      .cards-grid .card {
+        flex: 0 1 calc((100% - 1 * var(--gap)) / 2);
+        min-width: var(--card-min);
+      }
+      .section-wrapper {
+        padding: 2.2rem 1rem;
+      }
+      .section-header {
+        margin-bottom: 1.8rem;
+      }
+      .card-img { height: 170px; }
+      .nav-title { font-size: .88rem; }
+      nav a { font-size: .72rem; padding: .22rem .45rem; }
+    }
+
+    /* Large phones: 2 columns */
     @media (max-width: 600px) {
-      .cards-grid { grid-template-columns: 1fr; }
+      :root { --gap: 1rem; --card-min: 0px; }
+      .cards-grid .card {
+        flex: 0 1 calc((100% - 1 * var(--gap)) / 2);
+        min-width: 140px;
+      }
       .nav-title { display: none; }
+      nav { padding: .4rem .5rem; gap: .15rem .3rem; }
+      nav a { font-size: .68rem; padding: .2rem .38rem; letter-spacing: .04em; }
+      .section-wrapper { padding: 1.8rem .75rem; }
+      .card-img { height: 140px; }
+      .card-body { padding: .85rem 1rem 1.1rem; }
+      .card-title { font-size: 1rem; }
+      .card-desc { font-size: .92rem; }
+      .card-quote { font-size: .82rem; padding: .5rem .75rem; }
+    }
+
+    /* Small phones: single column */
+    @media (max-width: 400px) {
+      :root { --gap: .85rem; }
+      .cards-grid { justify-content: stretch; }
+      .cards-grid .card {
+        flex: 1 1 100%;
+        min-width: 0;
+      }
+      nav a { font-size: .64rem; padding: .18rem .32rem; }
+      .card-img { height: 180px; }
     }
   </style>
 </head>
@@ -659,6 +736,33 @@
       link.classList.toggle('active', link.getAttribute('href') === '#' + current);
     });
   });
+
+  // Dynamically cap card width so partial last rows stay centered
+  // and don't stretch to fill the full row
+  function updateCardMaxWidth() {
+    const grids = document.querySelectorAll('.cards-grid');
+    grids.forEach(grid => {
+      const gridWidth = grid.offsetWidth;
+      const style = getComputedStyle(document.documentElement);
+      const gap = parseFloat(style.getPropertyValue('--gap')) || 24;
+
+      // Determine how many columns currently fit
+      const cards = grid.querySelectorAll('.card');
+      if (!cards.length) return;
+      const cardWidth = cards[0].offsetWidth;
+      const cols = Math.round((gridWidth + gap) / (cardWidth + gap));
+
+      // Max width for a single card = one column's share
+      const maxW = (gridWidth - (cols - 1) * gap) / cols;
+      cards.forEach(c => { c.style.maxWidth = maxW + 'px'; });
+    });
+  }
+
+  // Run on load and resize
+  window.addEventListener('load', updateCardMaxWidth);
+  window.addEventListener('resize', updateCardMaxWidth);
+  // Also run after a short delay to catch font/layout shifts
+  setTimeout(updateCardMaxWidth, 300);
 </script>
 </body>
 </html>
